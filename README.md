@@ -15,9 +15,9 @@ GRIP_AIFP_COMET/
 ├── model_inference_effnetb3.py
 ├── model_inference_vgg19.py
 ├── effnetb3_confmat.py
-├── effnetb3_npmodel.npz     # download separately
+├── effnetb3_npmodel.npz     # download separately, refer to **Model weights**
 ├── vgg19_confmat.py
-├── vgg19_weights.npz        # download separately
+├── vgg19_weights.npz        # download separately, refer to **Model weights**
 ├── templates/
 │   ├── fp_preds.html
 │   └── fp_norm.html
@@ -68,7 +68,7 @@ Download both files and place them in the project root, next to `fp_app.py` as s
 | Backend | Default filename | Env var override |
 | ----- | ----- | ----- |
 | VGG-19 | `vgg19_weights.npz` | `FP_MODEL_WEIGHTS_VGG19` |
-| EfficientNet-B3 | `effnetb3_npmodel2npz` | *(none — see below)* |
+| EfficientNet-B3 | `effnetb3_npmodel.npz` | *(none — see below)* |
 
 2. Edit `WEIGHTS_PATH, test_csv_path, SD302_dict` in effnetb3\_confmat.py or vgg19\_confmat.py. Run script to test model.   
 3. Edit `WEIGHTS_PATH` in `model_inference_vgg19.py` or `model_inference_effnetb3.py`
