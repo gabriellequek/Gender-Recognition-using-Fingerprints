@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Project GRIP</title>
+        <link rel="icon" href="/static/web_icon.png">
+        <style>
+            body {
+                background-color: rgb(0, 0, 0);
+                margin: 0;
+                padding: 40px 20px 80px;
+            }
+
+            h1 {
+                color: rgb(255, 255, 255);
+                text-align: center;
+                font-family: monospace;
+                font-size: 40px; 
+                margin-bottom:2px;
+            }
+            #fp_icon {
+                display:inline;
+                position: relative;
+                top: 8px
+            }
+            h2 {
+                color: rgb(128,128,128);
+                font-family: monospace;
+                font-size: 14px;
+                margin-bottom: 25px;
+                text-align: center;
+            }
+ 
+            #upload {
+                text-align: center;
+            }
+
+            #custom-button,
+            #analyze-button {
+                padding: 10px;
+                color: white;
+                background-color: black;
+                border: 1px solid white;
+                border-radius: 5px;
+                cursor: grab;
+                font-family: monospace;
+                font-size: 15px;
+            }
+
+
+            #analyze-button {
+                margin-top: 14px;
+                cursor: pointer;
+            }
+
+            #analyze-button:disabled {
+                color: rgb(120, 120, 120);
+                border-color: rgb(90, 90, 90);
+            }
+
+            #custom-text {
+                font-family: monospace;
+                font-size: 12px;
+                color: rgb(128,128,128);
+            }
+
+            p {
+                color: rgb(255, 255, 255);
+                font-family: monospace;
+                font-size: 20px
+            }
+           
+            span {
+                color: rgb(255,255,255);
+            }
+
+            #preview-img {
+                display: block;
+                max-width: 260px;
+                max-height: 260px;
+                margin: 20px auto 0;
+                border: 1px solid white;
+                border-radius: 5px;
+            }
+
+            #error-text {
+                color: rgb(255, 120, 120);
+                font-family: monospace;
+                font-size: 13px;
+            }
+
+            #loading p {
+                text-align: center;
+                font-family: monospace;
+                color: rgb(44,255,61);
+                margin-top: 40px;
+               }
+            #loading p::after {
+                 content: '';
+                 display: inline-block;
+                 width: 1em;
+                 text-align: left;
+                 animation: dots 1s steps(4, end) infinite;
+                }
+
+            @keyframes dots {
+                 0%   { content: ''; }
+                 25%  { content: '.'; }
+                 50%  { content: '..'; }
+                 75%  { content: '...'; }
+                 100% { content: '...'; }
+                }
+            /* --- Results --- */
+
+            #results {
+                max-width: 640px;
+                margin: 50px auto 0;
+                text-align: center;
+            }
+            
+            #complete_text{
+                color: white;
+                font-family: monospace;
+                margin-bottom: 30px;
+            }
+
+            #verdict {
+                margin-bottom: 30px;
+            }
+
+            #verdict-label {
+                font-family: monospace;
+                font-size: 16px;
+                margin: 14px 0 4px;
+            }
+
+            #confidence-text {
+                font-family: monospace;
+                font-size: 13px;
+                color: white;
+            }
+
+            #image-compare {
+                display: flex;
+                justify-content: center;
+                gap: 24px;
+                flex-wrap: wrap;
+            }
+
+            .image-block {
+                max-width: 260px;
+            }
+
+            .image-block img {
+                display: block;
+                max-width: 260px;
+                max-height: 340px;
+                width: auto;
+                height: auto;
+                border: 1px solid white;
+                border-radius: 5px;
+             }
+
+            .image-caption {
+                font-family: monospace;
+                font-size: 13px;
+                margin-top: 8px;
+            }
+
+            @media (max-width: 560px) {
+                .image-block {
+                    width: 90%;
+                    max-width: 300px;
+                }
+            }
+        </style>
+    </head>
+
+    <body>
+        <div id="page-header">
+            <h1>Project GRIP
+            <img id="fp_icon" src="/static/fp_icon.png" alt="fingerprint_icon" style="width:45px; height:45px;">
+            </h1>
+            <h2>Using fingerprints to predict sex</h2>
+        </div>
+
+        <section id="upload">
+            <img id="mg" src="/static/magnifying_glass.png" alt="magnifying glass" style="width:50px; height:50px;">
+            <p>Upload a fingerprint image to begin.</p>
+            <input type="file" id="real-file" accept=".png,.jpg,.jpeg,.bmp,.tif,.tiff" hidden="hidden"/>
+            <button type="button" id="custom-button">CHOOSE A FILE</button>
+            <p id="custom-text">No file chosen yet.</p>
+
+            <img id="preview-img" hidden />
+
+            <br>
+            <button type="button" id="analyze-button" disabled>ANALYZE FINGERPRINT</button>
+            <p id="error-text" hidden></p>
+        </section>
+
+        <section id="loading" hidden>
+            <p>Running inference</p>
+        </section>
+
+        <section id="results" hidden>
+            <p id="complete_text">ANALYSIS COMPLETE</p>
+
+            <div id="image-compare">
+                <div class="image-block">
+                    <img id="input-image" />
+                    <p class="image-caption">Input</p>
+                </div>
+                <div class="image-block">
+                    <img id="heatmap-image" />
+                    <p class="image-caption">Grad-CAM Heatmap</p>
+                </div>
+
+            </div>
+            <div id="verdict">
+                <p id="verdict-label">&mdash;</p>
+                <p id="confidence-text"><span id="confidence-value">0</span>% confidence</p>
+            </div>
+
+            
+        </section>
+
+        <script>
+            const realFileBtn = document.getElementById("real-file");
+            const customBtn = document.getElementById("custom-button");
+            const customTxt = document.getElementById("custom-text");
+            const previewImg = document.getElementById("preview-img");
+            const analyzeBtn = document.getElementById("analyze-button");
+            const errorText = document.getElementById("error-text");
+            const loadingSection = document.getElementById("loading");
+            const resultsSection = document.getElementById("results");
+
+            const verdictLetter = document.getElementById("verdict-letter");
+            const verdictLabel = document.getElementById("verdict-label");
+            const confidenceValue = document.getElementById("confidence-value");
+            const inputImage = document.getElementById("input-image");
+            const heatmapImage = document.getElementById("heatmap-image");
+
+            let selectedFile = null;
+
+            const LABELS = { F: "Predicted: Female", M: "Predicted: Male" };
+
+            customBtn.addEventListener("click", function () {
+                realFileBtn.click();
+            });
+
+            realFileBtn.addEventListener("change", function () {
+                if (realFileBtn.value) {
+                    customTxt.innerHTML = realFileBtn.value.match(/[\/\\]([\w\d\s\.\-\(\)]+)$/)[1];
+                } else {
+                    customTxt.innerHTML = "No file chosen yet";
+                }
+
+                setError(null);
+                resultsSection.hidden = true;
+
+                const file = realFileBtn.files && realFileBtn.files[0];
+                if (!file) {
+                    analyzeBtn.disabled = true;
+                    previewImg.hidden = true;
+                    return;
+                }
+
+                selectedFile = file;
+                analyzeBtn.disabled = false;
+
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    previewImg.src = e.target.result;
+                    previewImg.hidden = false;
+                };
+                reader.readAsDataURL(file);
+            });
+
+            analyzeBtn.addEventListener("click", async function () {
+                if (!selectedFile) return;
+
+                setError(null);
+                resultsSection.hidden = true;
+                loadingSection.hidden = false;
+                analyzeBtn.disabled = true;
+
+                const formData = new FormData();
+                formData.append("image", selectedFile);
+
+                try {
+                    const res = await fetch("/predict", { method: "POST", body: formData });
+                    const data = await res.json();
+
+                    if (!res.ok) {
+                        throw new Error(data.error || "Something went wrong.");
+                    }
+
+                    renderResults(data);
+                } catch (err) {
+                    setError(err.message || "Could not reach the server.");
+                } finally {
+                    loadingSection.hidden = true;
+                    analyzeBtn.disabled = false;
+                }
+            });
+
+            function setError(message) {
+                if (!message) {
+                    errorText.hidden = true;
+                    errorText.innerHTML = "";
+                    return;
+                }
+                errorText.hidden = false;
+                errorText.innerHTML = message;
+            }
+
+            function renderResults(data) {
+                verdictLabel.innerHTML = LABELS[data.prediction] || ("Predicted: " + data.prediction);
+                confidenceValue.innerHTML = data.confidence.toFixed(1);
+
+                inputImage.src = data.input_image;
+                heatmapImage.src = data.heatmap_image;
+
+                resultsSection.hidden = false;
+                resultsSection.scrollIntoView({ behavior: "smooth", block: "nearest" });
+            }
+        </script>
+    </body>
+</html>
