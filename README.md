@@ -15,9 +15,9 @@ GRIP_AIFP_COMET/
 ├── model_inference_effnetb3.py
 ├── model_inference_vgg19.py
 ├── effnetb3_confmat.py
-├── effnetb3_npmodel.npz     # download separately, refer to **Model weights**
+├── effnetb3_npmodel.npz     # download separately, refer to Model weights below
 ├── vgg19_confmat.py
-├── vgg19_weights.npz        # download separately, refer to **Model weights**
+├── vgg19_weights.npz        # download separately, refer to Model weights below
 ├── templates/
 │   ├── fp_preds.html
 │   └── fp_norm.html
