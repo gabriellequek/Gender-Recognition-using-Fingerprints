@@ -7,21 +7,23 @@ Two small Flask apps built for running on COMET laptop:
 
 ## **Folder directory**
 
-GRIP\_AIFP\_COMET/   
-├── README.md  
-├── fp\_app.py  
-├── fp\_app\_norm.py  
-├── model\_inference\_effnetb3.py  
-├── model\_inference\_vgg19.py  
-├── effnetb3\_confmat.py  
-├── effnetb3\_npmodel.npz\(download separately)\
-├── vgg19\_confmat.py
-├── vgg19\_weights.npz\(download separately)\
-├── templates/  
-│   ├── fp\_preds.html  
-│   └── fp\_norm.html  
-└── static/  
+```
+GRIP_AIFP_COMET/
+├── README.md
+├── fp_app.py
+├── fp_app_norm.py
+├── model_inference_effnetb3.py
+├── model_inference_vgg19.py
+├── effnetb3_confmat.py
+├── effnetb3_npmodel.npz     # download separately
+├── vgg19_confmat.py
+├── vgg19_weights.npz        # download separately
+├── templates/
+│   ├── fp_preds.html
+│   └── fp_norm.html
+└── static/
     └── (icon images)
+```
 
 `fp_app.py` and `fp_app_norm.py` are independent apps that run on different ports — they're not meant to run as one process.
 
