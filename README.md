@@ -14,9 +14,9 @@ GRIP\_AIFP\_COMET/
 ├── model\_inference\_effnetb3.py  
 ├── model\_inference\_vgg19.py  
 ├── effnetb3\_confmat.py  
-├── effnetb3\_npmodel.npz  
+├── effnetb3\_npmodel.npz (download separately, see Model weights)
 ├── vgg19\_confmat.py  
-├── vgg19\_weights.npz  
+├── vgg19\_weights.npz (download separately, see Model weights)
 ├── templates/  
 │   ├── fp\_preds.html  
 │   └── fp\_norm.html  
@@ -47,9 +47,20 @@ pip install flask numpy pillow matplotlib scipy
 
 `scipy` is only needed by `model_inference_effnetb3.py` (for `expit`, used in SiLU/sigmoid). `model_inference_vgg19.py` doesn't need it.
 
+## **Model weights**
+
+The trained weights are too large for GitHub, so they are hosted on Google Drive:
+
+| File | Model | Download |
+| ----- | ----- | ----- |
+| `vgg19_weights.npz` | VGG-19 | [[Google Drive link](PASTE_LINK_HERE)] https://drive.google.com/file/d/1xbys2nqieZaoKYOaRczM0zPbD4wBrNlC/view?usp=share_link |
+| `effnetb3_npmodel.npz` | EfficientNet-B3 | [[Google Drive link](PASTE_LINK_HERE)](https://drive.google.com/file/d/15ECYzbZMNYegqRTVtudNe8VBICQPUWS0/view?usp=sharing) |
+
+Download both files and place them in the project root, next to `fp_app.py` as shown under **Folder directory**
+
 ## **Usage**
 
-1. Transfer model parameters in the form of NumPy arrays to COMET laptop   
+1. Download the weights (see **Model weights** above) and transfer them to the COMET laptop.
    Each backend looks for its `.npz` weights file relative to the process's working directory:
 
 | Backend | Default filename | Env var override |
